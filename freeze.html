@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css"> </head>
+
+<body>
+    <div id="freeze">
+        <div id="add" class="button">Add</div>
+    </div>
+    <div id="plate"></div>
+    <script>
+        let freeze = {
+            place: document.getElementById("freeze")
+            , addButton() {
+                let addButton = document.getElementById("add");
+                addButton.addEventListener("click", this.addProduct)
+            }
+            , addProduct: function () {
+                // формирует блок запроса
+                let data = []
+                let initBlock = document.createElement("div")
+                    // во всплывающий блок помещаем верстку
+                for (let i = 0, initData = ["name", "mass", "kall"]; i < initData.length; i++) {
+                    let description = document.createElement("div")
+                    description.append(initData[i])
+                    initBlock.insertAdjacentElement("beforeend", description);
+                    let name = document.createElement("input")
+                    initBlock.insertAdjacentElement("beforeend", name);
+                    freeze.place.insertAdjacentElement("beforebegin", initBlock);
+                }
+                let accept = document.createElement("div")
+                accept.classList.add("button")
+                accept.append("Accept")
+                initBlock.insertAdjacentElement("beforeend", accept);
+                //принять данные по клику на кнопку
+                let acception = function (clickElement) {
+                    //по клику добавляется .value в data
+                    for (let i = 0; i < clickElement.target.parentElement.children.length; i++) {
+                        let inputData = clickElement.target.parentElement.children[i].value
+                        if (i % 2 != 0) {
+                            data.push(inputData)
+                        }
+                    }
+                    console.log(data)
+                    let product = new Product(...data)
+                    product.place()
+                    initBlock.remove()
+                }
+                accept.addEventListener("click", acception)
+                initBlock.style.position = "fixed"
+                
+            }
+        }
+        class Product {
+            constructor(name, mass, kall) {
+                this.name = name;
+                this.mass = mass;
+                this.kall = kall;
+            }
+            place() {
+                let block = document.createElement("div");
+                block.classList.add("block");
+                let blockName = document.createElement("div");
+                blockName.innerText = this.name;
+                block.insertAdjacentElement("beforeend", blockName);
+                let blockKall = document.createElement("div");
+                blockKall.append(this.kall);
+                block.insertAdjacentElement("beforeend", blockKall);
+                let blockMass = document.createElement("div");
+                blockMass.append(this.mass);
+                block.insertAdjacentElement("beforeend", blockMass)
+                let buttonCorrect = document.createElement("div");
+                buttonCorrect.append("Correct");
+                buttonCorrect.classList.add("button")
+                block.insertAdjacentElement("beforeend", buttonCorrect)
+                let buttonDeleting = document.createElement("div");
+                buttonDeleting.append("Delete");
+                buttonDeleting.classList.add("button")
+                block.insertAdjacentElement("beforeend", buttonDeleting)
+                let buttonAddToPlate = document.createElement("div");
+                buttonAddToPlate.append("Add To Plate");
+                buttonAddToPlate.classList.add("button")
+                block.insertAdjacentElement("beforeend", buttonAddToPlate)
+                freeze.place.insertAdjacentElement("beforeend", block)
+            }
+            correct() {}
+            deleting() {}
+            addToPlate() {}
+        }
+        let platePlace = document.getElementById("plate")
+        freeze.addButton()
+    </script>
+</body>
+
+</html>

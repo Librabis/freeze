@@ -1,0 +1,16 @@
+.block {
+    display: flex;
+    width: 550px;
+    justify-content: space-between;
+}
+
+.button {
+    background-color: coral;
+    color: white;
+    border-radius: 20px;
+    width: 120px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
