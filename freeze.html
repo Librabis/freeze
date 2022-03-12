@@ -18,40 +18,41 @@
                 let addButton = document.getElementById("add");
                 addButton.addEventListener("click", this.addProduct)
             }
-            , addProduct: function () {
-                // формирует блок запроса
-                let data = []
-                let initBlock = document.createElement("div")
-                    // во всплывающий блок помещаем верстку
-                for (let i = 0, initData = ["name", "mass", "kall"]; i < initData.length; i++) {
-                    let description = document.createElement("div")
-                    description.append(initData[i])
-                    initBlock.insertAdjacentElement("beforeend", description);
-                    let name = document.createElement("input")
-                    initBlock.insertAdjacentElement("beforeend", name);
-                    freeze.place.insertAdjacentElement("beforebegin", initBlock);
-                }
-                let accept = document.createElement("div")
-                accept.classList.add("button")
-                accept.append("Accept")
-                initBlock.insertAdjacentElement("beforeend", accept);
-                //принять данные по клику на кнопку
-                let acception = function (clickElement) {
-                    //по клику добавляется .value в data
-                    for (let i = 0; i < clickElement.target.parentElement.children.length; i++) {
-                        let inputData = clickElement.target.parentElement.children[i].value
-                        if (i % 2 != 0) {
-                            data.push(inputData)
-                        }
-                    }
-                    console.log(data)
-                    let product = new Product(...data)
-                    product.place()
-                    initBlock.remove()
-                }
-                accept.addEventListener("click", acception)
-                initBlock.style.position = "fixed"
-                
+            , addProduct: function (clickElement) {
+                //                // формирует блок запроса
+                //                let data = []
+                //                let initBlock = document.createElement("div")
+                //                    // во всплывающий блок помещаем верстку
+                //                for (let i = 0, initData = ["name", "mass", "kall"]; i < initData.length; i++) {
+                //                    let description = document.createElement("div")
+                //                    description.append(initData[i])
+                //                    initBlock.insertAdjacentElement("beforeend", description);
+                //                    let name = document.createElement("input")
+                //                    initBlock.insertAdjacentElement("beforeend", name);
+                //                    freeze.place.insertAdjacentElement("beforebegin", initBlock);
+                //                }
+                //                let accept = document.createElement("div")
+                //                accept.classList.add("button")
+                //                accept.append("Accept")
+                //                initBlock.insertAdjacentElement("beforeend", accept);
+                //                //принять данные по клику на кнопку
+                //                let acception = function (clickElement) {
+                //                    //по клику добавляется .value в data
+                //                    for (let i = 0; i < clickElement.target.parentElement.children.length; i++) {
+                //                        let inputData = clickElement.target.parentElement.children[i].value
+                //                        if (i % 2 != 0) {
+                //                            data.push(inputData)
+                //                        }
+                //                    }
+                //                    console.log(data)
+                //                    let product = new Product(...data)
+                //                    product.place()
+                //                    initBlock.remove()
+                //                }
+                //                accept.addEventListener("click", acception)
+                //                initBlock.style.position = "fixed"
+                let adding = new ConnectBlock(clickElement.target)
+                adding.create()
             }
         }
         class Product {
@@ -66,19 +67,21 @@
                 let blockName = document.createElement("div");
                 blockName.innerText = this.name;
                 block.insertAdjacentElement("beforeend", blockName);
-                let blockKall = document.createElement("div");
-                blockKall.append(this.kall);
-                block.insertAdjacentElement("beforeend", blockKall);
                 let blockMass = document.createElement("div");
                 blockMass.append(this.mass);
                 block.insertAdjacentElement("beforeend", blockMass)
+                let blockKall = document.createElement("div");
+                blockKall.append(this.kall);
+                block.insertAdjacentElement("beforeend", blockKall);
                 let buttonCorrect = document.createElement("div");
                 buttonCorrect.append("Correct");
                 buttonCorrect.classList.add("button")
                 block.insertAdjacentElement("beforeend", buttonCorrect)
+                buttonCorrect.addEventListener("click", this.correct)
                 let buttonDeleting = document.createElement("div");
                 buttonDeleting.append("Delete");
                 buttonDeleting.classList.add("button")
+                buttonDeleting.addEventListener("click", this.deleting)
                 block.insertAdjacentElement("beforeend", buttonDeleting)
                 let buttonAddToPlate = document.createElement("div");
                 buttonAddToPlate.append("Add To Plate");
@@ -86,9 +89,73 @@
                 block.insertAdjacentElement("beforeend", buttonAddToPlate)
                 freeze.place.insertAdjacentElement("beforeend", block)
             }
-            correct() {}
-            deleting() {}
+            correct(clickElement) {
+                let correction = new ConnectBlock(clickElement.target)
+                correction.inCorrect(clickElement.target.parentElement)
+            }
+            deleting(clickElement) {
+                clickElement.target.parentElement.remove()
+            }
             addToPlate() {}
+        }
+        class ConnectBlock {
+            constructor(clickElement) {
+                this.clickElement = clickElement
+            }
+            create() {
+                let initBlock = document.createElement("div")
+                for (let i = 0, initData = ["name", "mass", "kall"]; i < initData.length; i++) {
+                    let description = document.createElement("div")
+                    description.append(initData[i])
+                    initBlock.insertAdjacentElement("beforeend", description);
+                    let name = document.createElement("input")
+                    initBlock.insertAdjacentElement("beforeend", name);
+                    freeze.place.insertAdjacentElement("beforebegin", initBlock);
+                    initBlock.style.position = "fixed"
+                    initBlock.style.backgroundColor = "white"
+                }
+                let acception = document.createElement("div")
+                acception.classList.add("button")
+                acception.append("Accept")
+                initBlock.insertAdjacentElement("beforeend", acception);
+                acception.addEventListener("click", this.accept)
+            }
+            accept(clickElement) {
+                let data = []
+                for (let i = 0; i < clickElement.target.parentElement.children.length; i++) {
+                    let inputData = clickElement.target.parentElement.children[i].value
+                    if (i % 2 != 0) {
+                        data.push(inputData)
+                    }
+                }
+                let productInFreeze = new Product(...data)
+                productInFreeze.place()
+                clickElement.target.parentElement.remove()
+            }
+            inAdd() {}
+            inCorrect(productBlock) {
+                //!!! Повторяет блок create!!!! нужно оптимизировать, мб распилить функциию
+                let initBlock = document.createElement("div")
+                for (let i = 0, initData = ["name", "mass", "kall"]; i < initData.length; i++) {
+                    let description = document.createElement("div")
+                    description.append(initData[i])
+                    initBlock.insertAdjacentElement("beforeend", description);
+                    let name = document.createElement("input")
+                    name.value = productBlock.children[i].innerText
+                    initBlock.insertAdjacentElement("beforeend", name);
+                    freeze.place.insertAdjacentElement("beforebegin", initBlock);
+                    initBlock.style.position = "fixed"
+                    initBlock.style.backgroundColor = "white"
+                }
+                let acception = document.createElement("div")
+                acception.classList.add("button")
+                acception.append("Accept")
+                initBlock.insertAdjacentElement("beforeend", acception);
+                acception.addEventListener("click", this.accept)
+                    // после нажатия кнопки принятия блок помещается в верстку, а родитель кликнутого элемента удаляется
+                productBlock.remove()
+            }
+            deleting() {}
         }
         let platePlace = document.getElementById("plate")
         freeze.addButton()
